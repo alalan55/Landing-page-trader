@@ -3,7 +3,7 @@
     <div class="texto--fale--comigo">
       <h1>Quer saber mais sobre trade? Fale diretamente comigo</h1>
     </div>
-    <form v-on:submit="enviaForm" id="form">
+    <form v-on:submit="enviaForm" id="formulario">
       <input
         type="text"
         placeholder="Nome e Sobrenome"
@@ -23,7 +23,7 @@
     </form>
 
     <div class="sucesso" v-if="success">
-      <h1>form enviado com sucesso</h1>
+      <h1>Enviado com sucesso!</h1>
     </div>
   </div>
 </template>
@@ -41,6 +41,7 @@ export default {
   },
   methods: {
     enviaForm(e) {
+      // const formu = document.getElementById('formulario');
       e.preventDefault();
       this.form = {
         nome: this.nome,
@@ -62,26 +63,42 @@ export default {
         },
         body: val,
       });
-
       const content = await response.json();
       // console.log(content.response);
-      content.response.includes("OK") ? this.mensagemDeSucesso(): (this.success = false);
+      content.response.includes("OK")
+        ? this.mensagemDeSucesso()
+        : (this.success = false);
     },
 
     mensagemDeSucesso() {
-      let intervalo = setInterval(() =>{
+      const formu = document.getElementById("formulario");
+      let intervalo = setInterval(() => {
         this.success = true;
       }, 2000);
 
-      window.setTimeout(() =>{
+      setTimeout(() => {
         clearInterval(intervalo);
-        this.success = false
+        this.success = false;
+        formu.reset();
       }, 6000);
     },
   },
 };
 </script>
 <style scoped>
+.sucesso {
+  /* border: 1px solid; */
+  text-align: center;
+  margin-top: 1.5%;
+  background-color: #708bc9;
+  /* background-color:#2E8B57; */
+  border-radius: 15px;
+  padding: 5px;
+  transition: 0.4s ease-in-out;
+}
+.sucesso h1 {
+  color: white;
+}
 .fale--comigo {
   padding: 4em;
   background: #ebf2fa;
