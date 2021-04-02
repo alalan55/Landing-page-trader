@@ -1,61 +1,120 @@
 <template>
-<div class="fale--comigo" id="contato">
+  <div class="fale--comigo" id="contato">
     <div class="texto--fale--comigo">
-        <h1>Quer saber mais sobre trade? Fale diretamente comigo</h1>
+      <h1>Quer saber mais sobre trade? Fale diretamente comigo</h1>
     </div>
-    <form action="">
+    <form v-on:submit="enviaForm" id="form">
+      <input
+        type="text"
+        placeholder="Nome e Sobrenome"
+        v-model="nome"
+        name="nome"
+      />
+      <input type="email" placeholder="E-mail" v-model="email" name="email" />
 
+      <textarea
+        name="mensagem"
+        v-model="mensagem"
+        cols="30"
+        rows="10"
+      ></textarea>
 
-        <input type="text" placeholder="Nome e Sobrenome">
-        <input type="email" placeholder="E-mail">
-
-        <textarea name="" id="" cols="30" rows="10"></textarea>
-
-        <input type="button"  class="btn-enviar" value="Enviar">
+      <input type="submit" class="btn-enviar" value="Enviar" />
     </form>
 
-</div>
-
+    <div class="sucesso" v-if="success">
+      <h1>form enviado com sucesso</h1>
+    </div>
+  </div>
 </template>
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      nome: "",
+      email: "",
+      mensagem: "",
+      url: "http://localhost:3030/send",
+      form: {},
+      success: false,
+    };
+  },
+  methods: {
+    enviaForm(e) {
+      e.preventDefault();
+      this.form = {
+        nome: this.nome,
+        email: this.email,
+        mensagem: this.mensagem,
+      };
+
+      let responseJson = JSON.stringify(this.form);
+      // this.makeRequest(JSON.parse(responseJson));
+      this.makeRequest(responseJson);
+    },
+    async makeRequest(val) {
+      let response = await fetch(this.url, {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: val,
+      });
+
+      const content = await response.json();
+      // console.log(content.response);
+      content.response.includes("OK") ? this.mensagemDeSucesso(): (this.success = false);
+    },
+
+    mensagemDeSucesso() {
+      let intervalo = setInterval(() =>{
+        this.success = true;
+      }, 2000);
+
+      window.setTimeout(() =>{
+        clearInterval(intervalo);
+        this.success = false
+      }, 6000);
+    },
+  },
+};
 </script>
 <style scoped>
-
-.fale--comigo{
-    padding: 4em;
-    background: #EBF2FA;
+.fale--comigo {
+  padding: 4em;
+  background: #ebf2fa;
 }
-.texto--fale--comigo{
-    text-align: center;
-    color: #253765;
-    padding-bottom: 15px;
+.texto--fale--comigo {
+  text-align: center;
+  color: #253765;
+  padding-bottom: 15px;
 }
-form{
-    display: flex;
-    flex-direction: column;
+form {
+  display: flex;
+  flex-direction: column;
 }
-input{
-    margin: 10px 0;
-    padding: 10px;
-    background: none;
-    outline: 0;
-    border: 1px solid #253765;
+input {
+  margin: 10px 0;
+  padding: 10px;
+  background: none;
+  outline: 0;
+  border: 1px solid #253765;
 }
-textarea{
-    max-width: 100%;
-    background: none;
-    border: 1px solid #253765;
+textarea {
+  max-width: 100%;
+  background: none;
+  border: 1px solid #253765;
 }
-.btn-enviar{
-    background:#253765;
-    color: white;
-    cursor: pointer;
-    transition: .3s ease-in-out;
-    padding: 10px;
+.btn-enviar {
+  background: #253765;
+  color: white;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+  padding: 10px;
 }
-.btn-enviar:hover{
-   background: #405280;
+.btn-enviar:hover {
+  background: #405280;
 }
-
 </style>
